@@ -41,7 +41,7 @@ class DataBaseService
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
-            'birthday' => $birthday->format(DateTime::RFC3339),
+            'birthday' => $birthday->format('Y-m-d'),
         ];
         $sql = 'INSERT INTO users (firstname, lastname, email, birthday) VALUES (:firstname, :lastname, :email, :birthday)';
         $query = $this->connection->prepare($sql);
@@ -79,12 +79,11 @@ class DataBaseService
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
-            'birthday' => $birthday->format(DateTime::RFC3339),
+            'birthday' => $birthday->format('Y-m-d'),
         ];
         $sql = 'UPDATE users SET firstname = :firstname, lastname = :lastname, email = :email, birthday = :birthday WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
-
         return $isOk;
     }
 
@@ -99,6 +98,79 @@ class DataBaseService
             'id' => $id,
         ];
         $sql = 'DELETE FROM users WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Create a Car.
+     */
+    public function createCar(string $marque, string $modele, string $couleur): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'marque' => $marque,
+            'modele' => $modele,
+            'couleur' => $couleur,
+        ];
+        $sql = 'INSERT INTO cars (marque, modele, couleur) VALUES (:marque, :modele, :couleur)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Return all cars.
+     */
+    public function getCars(): array
+    {
+        $cars = [];
+
+        $sql = 'SELECT * FROM cars';
+        $query = $this->connection->query($sql);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $cars = $results;
+        }
+
+        return $cars;
+    }
+
+    /**
+     * Update a car.
+     */
+    public function updateCar(string $id, string $marque, string $modele, string $couleur): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+            'marque' => $marque,
+            'modele' => $modele,
+            'couleur' => $couleur,
+        ];
+        $sql = 'UPDATE cars SET marque = :marque, modele = :modele, couleur = :couleur WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Delete a car.
+     */
+    public function deleteCar(string $id): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+        ];
+        $sql = 'DELETE FROM cars WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
