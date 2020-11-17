@@ -104,6 +104,7 @@ class DataBaseService
         return $isOk;
     }
 
+
     /**
      * Create a Car.
      */
@@ -177,10 +178,11 @@ class DataBaseService
         return $isOk;
     }
 
+
     /**
      * Create an ad.
      */
-    public function createAnnonce(string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place): bool
+    public function createAnnonce(string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place, string $prix): bool
     {
         $isOk = false;
 
@@ -189,8 +191,9 @@ class DataBaseService
             'lieuArrivee' => $lieuArrivee,
             'dateDepart' => $dateDepart->format('Y-m-d H:i'),
             'place' => $place,
+            'prix' => $prix,
         ];
-        $sql = 'INSERT INTO annonces (lieuDepart, lieuArrivee, dateDepart, place) VALUES (:lieuDepart, :lieuArrivee, :dateDepart, :place)';
+        $sql = 'INSERT INTO annonces (lieuDepart, lieuArrivee, dateDepart, place, prix) VALUES (:lieuDepart, :lieuArrivee, :dateDepart, :place, :prix)';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -217,7 +220,7 @@ class DataBaseService
     /**
      * Update an ad.
      */
-    public function updateAnnonce(string $id, string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place): bool
+    public function updateAnnonce(string $id, string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place, string $prix): bool
     {
         $isOk = false;
 
@@ -227,8 +230,9 @@ class DataBaseService
             'lieuArrivee' => $lieuArrivee,
             'dateDepart' => $dateDepart->format('Y-m-d H:i'),
             'place' => $place,
+            'prix' => $prix,
         ];
-        $sql = 'UPDATE annonces SET lieuDepart = :lieuDepart, lieuArrivee = :lieuArrivee, dateDepart = :dateDepart, place = :place WHERE id = :id;';
+        $sql = 'UPDATE annonces SET lieuDepart = :lieuDepart, lieuArrivee = :lieuArrivee, dateDepart = :dateDepart, place = :place, prix = :prix WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
         return $isOk;
@@ -245,6 +249,78 @@ class DataBaseService
             'id' => $id,
         ];
         $sql = 'DELETE FROM annonces WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+
+        /**
+     * Create a reservation.
+     */
+    public function createReservation(string $idUser, string $idAnnonce): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'idUser' => $idUser,
+            'idAnnonce' => $idAnnonce,
+        ];
+        $sql = 'INSERT INTO reservations (idUser, idAnnonce) VALUES (:idUser, :idAnnonce)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Return all reservations.
+     */
+    public function getReservations(): array
+    {
+        $reservations = [];
+
+        $sql = 'SELECT * FROM reservations';
+        $query = $this->connection->query($sql);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $reservations = $results;
+        }
+
+        return $reservations;
+    }
+
+    /**
+     * Update a reservation.
+     */
+    public function updateReservation(string $id, string $idUser, string $idAnnonce): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+            'idUser' => $idUser,
+            'idAnnonce' => $idAnnonce,
+        ];
+        $sql = 'UPDATE reservations SET idUser = :idUser, idAnnonce = :idAnnonce WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Delete a reservation.
+     */
+    public function deleteReservation(string $id): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+        ];
+        $sql = 'DELETE FROM reservations WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 

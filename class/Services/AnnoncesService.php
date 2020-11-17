@@ -10,16 +10,16 @@ class AnnoncesService
     /**
      * Create or update an Annonce.
      */
-    public function setAnnonce(?string $id, string $lieuDepart, string $lieuArrivee, string $dateDepart, string $place): bool
+    public function setAnnonce(?string $id, string $lieuDepart, string $lieuArrivee, string $dateDepart, string $place, string $prix): bool
     {
         $isOk = false;
 
         $dataBaseService = new DataBaseService();
         $dateDepartDateTime = new DateTime($dateDepart);
         if (empty($id)) {
-            $isOk = $dataBaseService->createAnnonce($lieuDepart, $lieuArrivee, $dateDepartDateTime, $place);
+            $isOk = $dataBaseService->createAnnonce($lieuDepart, $lieuArrivee, $dateDepartDateTime, $place, $prix);
         } else {
-            $isOk = $dataBaseService->updateAnnonce($id, $lieuDepart, $lieuArrivee, $dateDepartDateTime, $place);
+            $isOk = $dataBaseService->updateAnnonce($id, $lieuDepart, $lieuArrivee, $dateDepartDateTime, $place, $prix);
         }
 
         return $isOk;
@@ -41,6 +41,7 @@ class AnnoncesService
                 $annonce->setLieuDepart($annonceDTO['lieuDepart']);
                 $annonce->setLieuArrivee($annonceDTO['lieuArrivee']);
                 $annonce->setPlace($annonceDTO['place']);
+                $annonce->setPrix($annonceDTO['prix']);
                 $date = new DateTime($annonceDTO['dateDepart']);
                 if ($date !== false) {
                     $annonce->setDateDepart($date);
