@@ -176,4 +176,78 @@ class DataBaseService
 
         return $isOk;
     }
+
+    /**
+     * Create an ad.
+     */
+    public function createAnnonce(string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'lieuDepart' => $lieuDepart,
+            'lieuArrivee' => $lieuArrivee,
+            'dateDepart' => $dateDepart->format('Y-m-d H:i'),
+            'place' => $place,
+        ];
+        $sql = 'INSERT INTO annonces (lieuDepart, lieuArrivee, dateDepart, place) VALUES (:lieuDepart, :lieuArrivee, :dateDepart, :place)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Return all ads.
+     */
+    public function getAnnonces(): array
+    {
+        $annonces = [];
+
+        $sql = 'SELECT * FROM annonces';
+        $query = $this->connection->query($sql);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $annonces = $results;
+        }
+
+        return $annonces;
+    }
+
+    /**
+     * Update an ad.
+     */
+    public function updateAnnonce(string $id, string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+            'lieuDepart' => $lieuDepart,
+            'lieuArrivee' => $lieuArrivee,
+            'dateDepart' => $dateDepart->format('Y-m-d H:i'),
+            'place' => $place,
+        ];
+        $sql = 'UPDATE annonces SET lieuDepart = :lieuDepart, lieuArrivee = :lieuArrivee, dateDepart = :dateDepart, place = :place WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+        return $isOk;
+    }
+
+    /**
+     * Delete an ad.
+     */
+    public function deleteAnnonce(string $id): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'id' => $id,
+        ];
+        $sql = 'DELETE FROM annonces WHERE id = :id;';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
 }
