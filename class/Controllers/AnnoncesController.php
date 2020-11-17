@@ -17,7 +17,8 @@ class AnnoncesController
         if (isset($_POST['lieuDepart']) &&
             isset($_POST['lieuArrivee']) &&
             isset($_POST['dateDepart'])&&
-            isset($_POST['place'])) {
+            isset($_POST['place'])&&
+            isset($_POST['prix'])) {
             // Create the Annonce :
             $annoncesService = new AnnoncesService();
             $isOk = $annoncesService->setAnnonce(
@@ -25,12 +26,13 @@ class AnnoncesController
                 $_POST['lieuDepart'],
                 $_POST['lieuArrivee'],
                 $_POST['dateDepart'],
-                $_POST['place']
+                $_POST['place'],
+                $_POST['prix']
             );
             if ($isOk) {
-                $html = 'Utilisateur créé avec succès.';
+                $html = 'Annonce créé avec succès.';
             } else {
-                $html = 'Erreur lors de la création de l\'utilisateur.';
+                $html = 'Erreur lors de la création de l\'annonce.';
             }
         }
 
@@ -55,7 +57,8 @@ class AnnoncesController
                 $annonce->getLieuDepart() . ' ==> ' .
                 $annonce->getLieuArrivee() . ' | '.
                 $annonce->getDateDepart()->format('H:i d-m-Y') . ' | '.
-                $annonce->getPlace() . ' places disponible <br />';
+                $annonce->getPlace() . ' places disponible | '.
+                $annonce->getPrix() . '€ <br />';
         }
 
         return $html;
@@ -73,7 +76,8 @@ class AnnoncesController
             isset($_POST['lieuDepart']) &&
             isset($_POST['lieuArrivee']) &&
             isset($_POST['dateDepart']) &&
-            isset($_POST['place'])) {
+            isset($_POST['place'])&&
+            isset($_POST['prix'])) {
             // Update the Annonce :
             $annoncesService = new AnnoncesService();
             $isOk = $annoncesService->setAnnonce(
@@ -81,12 +85,13 @@ class AnnoncesController
                 $_POST['lieuDepart'],
                 $_POST['lieuArrivee'],
                 $_POST['dateDepart'],
-                $_POST['place']
+                $_POST['place'],
+                $_POST['prix']
             );
             if ($isOk) {
-                $html = 'Utilisateur mis à jour avec succès.';
+                $html = 'Annonce mis à jour avec succès.';
             } else {
-                $html = 'Erreur lors de la mise à jour de l\'utilisateur.';
+                $html = 'Erreur lors de la mise à jour de l\'annonce.';
             }
         }
 
@@ -106,9 +111,9 @@ class AnnoncesController
             $annoncesService = new AnnoncesService();
             $isOk = $annoncesService->deleteAnnonce($_POST['id']);
             if ($isOk) {
-                $html = 'Utilisateur supprimé avec succès.';
+                $html = 'Annonce supprimé avec succès.';
             } else {
-                $html = 'Erreur lors de la supression de l\'utilisateur.';
+                $html = 'Erreur lors de la supression de l\'annonce.';
             }
         }
 

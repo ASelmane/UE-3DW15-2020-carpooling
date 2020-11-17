@@ -11,6 +11,7 @@ class Annonce
     private $lieuArrivee;
     private $dateDepart;
     private $place;
+    private $prix;
 
     public function getId(): string
     {
@@ -62,5 +63,13 @@ class Annonce
         $this->place = $place;
     }
 
+    public function getPrix(): string
+    {
+        return $this->prix;
+    }
 
+    public function setPrix(string $prix): void
+    {
+        $this->prix = $prix;
+    }
 }

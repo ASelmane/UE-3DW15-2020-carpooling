@@ -21,5 +21,8 @@ echo $controller->createAnnonce();
     <label for="place">place dispo :</label>
     <input type="text" name="place">
     <br />
+    <label for="prix">Prix :</label>
+    <input type="text" name="prix">
+    <br />
     <input type="submit" value="Créer une annonce">
 </form>
