@@ -17,21 +17,30 @@ class UsersController
         if (isset($_POST['firstname']) &&
             isset($_POST['lastname']) &&
             isset($_POST['email']) &&
-            isset($_POST['birthday'])) {
+            isset($_POST['birthday']) &&
+            isset($_POST['cars'])) {
             // Create the user :
             $usersService = new UsersService();
-            $isOk = $usersService->setUser(
+            $userId = $usersService->setUser(
                 null,
                 $_POST['firstname'],
                 $_POST['lastname'],
                 $_POST['email'],
                 $_POST['birthday']
             );
-            if ($isOk) {
-                $html = 'Utilisateur créé avec succès.';
-            } else {
-                $html = 'Erreur lors de la création de l\'utilisateur.';
-            }
+
+             // Create the user cars relations :
+             $isOk = true;
+             if (!empty($_POST['cars'])) {
+                 foreach ($_POST['cars'] as $carId) {
+                     $isOk = $usersService->setUserCar($userId, $carId);
+                 }
+             }
+             if ($userId && $isOk) {
+                 $html = 'Utilisateur créé avec succès.';
+             } else {
+                 $html = 'Erreur lors de la création de l\'utilisateur.';
+             }
         }
 
         return $html;
@@ -50,12 +59,19 @@ class UsersController
 
         // Get html :
         foreach ($users as $user) {
+            $carsHtml = '';
+            if (!empty($user->getCars())) {
+                foreach ($user->getCars() as $car) {
+                    $carsHtml .= $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur() . ' ';
+                }
+            }
             $html .=
-                '#' . $user->getId() . ' ' .
+                '#' . $user->getId() . ' | ' .
                 $user->getFirstname() . ' ' .
-                $user->getLastname() . ' ' .
-                $user->getEmail() . ' ' .
-                $user->getBirthday()->format('d-m-Y') . '<br />';
+                $user->getLastname() . ' | ' .
+                $user->getEmail() . ' | ' .
+                $user->getBirthday()->format('d-m-Y') . ' | ' .
+                $carsHtml . '<br />';
         }
 
         return $html;

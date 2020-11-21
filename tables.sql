@@ -84,3 +84,24 @@ INSERT INTO `reservations` (`id`, `idUser`, `idAnnonce`) VALUES
 (1, 1, 2),
 (2, 2, 1),
 (3, 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users_cars`
+--
+CREATE TABLE users_cars (
+	user_id INT NOT NULL, 
+	car_id INT NOT NULL, 
+	PRIMARY KEY(user_id, car_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `users_cars`
+--
+
+INSERT INTO `users_cars` (`user_id`, `car_id`) VALUES
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 4);
