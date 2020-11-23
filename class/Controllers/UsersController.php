@@ -29,18 +29,18 @@ class UsersController
                 $_POST['birthday']
             );
 
-             // Create the user cars relations :
-             $isOk = true;
-             if (!empty($_POST['cars'])) {
-                 foreach ($_POST['cars'] as $carId) {
-                     $isOk = $usersService->setUserCar($userId, $carId);
-                 }
-             }
-             if ($userId && $isOk) {
-                 $html = 'Utilisateur créé avec succès.';
-             } else {
-                 $html = 'Erreur lors de la création de l\'utilisateur.';
-             }
+            // Create the user cars relations :
+            $isOk = true;
+            if (!empty($_POST['cars'])) {
+                foreach ($_POST['cars'] as $carId) {
+                    $isOk = $usersService->setUserCar($userId, $carId);
+                }
+            }
+            if ($userId && $isOk) {
+                $html = 'Utilisateur créé avec succès.';
+            } else {
+                $html = 'Erreur lors de la création de l\'utilisateur.';
+            }
         }
 
         return $html;
@@ -89,7 +89,8 @@ class UsersController
             isset($_POST['firstname']) &&
             isset($_POST['lastname']) &&
             isset($_POST['email']) &&
-            isset($_POST['birthday'])) {
+            isset($_POST['birthday']) &&
+            isset($_POST['cars'])) {
             // Update the user :
             $usersService = new UsersService();
             $isOk = $usersService->setUser(
@@ -99,6 +100,14 @@ class UsersController
                 $_POST['email'],
                 $_POST['birthday']
             );
+            //update the user cars relations :
+            $isOk = true;
+            $userId = $_POST['id'] ;
+            if (!empty($_POST['cars'])) {
+                foreach ($_POST['cars'] as $carId) {
+                    $isOk = $usersService->setUserCar($userId, $carId);
+                }
+            }
             if ($isOk) {
                 $html = 'Utilisateur mis à jour avec succès.';
             } else {

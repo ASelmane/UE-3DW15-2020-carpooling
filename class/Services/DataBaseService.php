@@ -101,7 +101,10 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE FROM users WHERE id = :id;';
+        $sql = 'DELETE users, users_cars 
+                FROM users
+                LEFT JOIN users_cars ON users_cars.user_id = users.id
+                WHERE users.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -175,7 +178,10 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE FROM cars WHERE id = :id;';
+        $sql = 'DELETE cars, users_cars 
+        FROM cars
+        LEFT JOIN users_cars ON users_cars.car_id = cars.id
+        WHERE cars.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 

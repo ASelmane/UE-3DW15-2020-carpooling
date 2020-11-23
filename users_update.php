@@ -1,11 +1,15 @@
 <?php
 
 use App\Controllers\UsersController;
+use App\Services\CarsService;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $controller = new UsersController();
 echo $controller->updateUser();
+
+$carsService = new CarsService();
+$cars = $carsService->getCars();
 ?>
 
 <p>Mise à jour d'un utilisateur</p>
@@ -24,6 +28,13 @@ echo $controller->updateUser();
     <br />
     <label for="birthday">Date d'anniversaire au format dd-mm-yyyy :</label>
     <input type="date" name="birthday">
+    <br />
+    <label for="cars">Voiture(s) :</label>
+    <?php foreach ($cars as $car): ?>
+        <?php $carName = $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur(); ?>
+        <input type="checkbox" name="cars[]" value="<?php echo $car->getId(); ?>"><?php echo $carName; ?>
+        <br />
+    <?php endforeach; ?>
     <br />
     <input type="submit" value="Modifier l'utilisateur">
 </form>
