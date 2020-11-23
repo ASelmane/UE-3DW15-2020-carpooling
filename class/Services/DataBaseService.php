@@ -101,9 +101,10 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE users, users_cars 
+        $sql = 'DELETE users, users_cars, users_annonces
                 FROM users
                 LEFT JOIN users_cars ON users_cars.user_id = users.id
+                LEFT JOIN users_annonces ON users_annonces.user_id = users.id
                 WHERE users.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
@@ -234,9 +235,9 @@ class DataBaseService
     /**
      * Create an ad.
      */
-    public function createAnnonce(string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place, string $prix): bool
+    public function createAnnonce(string $lieuDepart, string $lieuArrivee, DateTime $dateDepart, string $place, string $prix): string
     {
-        $isOk = false;
+        $annonceId = false;
 
         $data = [
             'lieuDepart' => $lieuDepart,
@@ -248,8 +249,11 @@ class DataBaseService
         $sql = 'INSERT INTO annonces (lieuDepart, lieuArrivee, dateDepart, place, prix) VALUES (:lieuDepart, :lieuArrivee, :dateDepart, :place, :prix)';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
+        if ($isOk) {
+            $annonceId = $this->connection->lastInsertId();
+        }
 
-        return $isOk;
+        return $annonceId;
     }
 
     /**
@@ -300,13 +304,70 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE FROM annonces WHERE id = :id;';
+        $sql = 'DELETE annonces, users_annonces 
+                FROM annonces
+                LEFT JOIN users_annonces ON users_annonces.annonce_id = annonces.id
+                WHERE annonces.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
         return $isOk;
     }
 
+     /**
+     * Create relation bewteen an user and his annonces.
+     */
+    public function setAnnonceUser(string $annonceId, string $userId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'userId' => $userId,
+            'annonceId' => $annonceId,
+        ];
+        $sql = 'INSERT INTO users_annonces (user_id, annonce_id) VALUES (:userId, :annonceId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get annonces of given user id.
+     */
+    public function getAnnoncesUsers(?string $annonceId, ?string $userId): array
+    {
+        $userAnnonces = [];
+        if(!empty($userId)){
+            $data = [
+                'userId' => $userId,
+            ];
+            $sql = '
+                SELECT a.*
+                FROM annonces as a
+                LEFT JOIN users_annonces as ua ON ua.annonce_id = a.id
+                WHERE ua.user_id = :userId';
+        }
+        else{
+            $data = [
+                'annonceId' => $annonceId,
+            ];
+            $sql = '
+                SELECT u.*
+                FROM users as u
+                LEFT JOIN users_annonces as ua ON ua.user_id = u.id
+                WHERE ua.annonce_id = :annonceId';
+        } 
+        
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $userAnnonces = $results;
+        }
+
+        return $userAnnonces;
+    }
 
         /**
      * Create a reservation.

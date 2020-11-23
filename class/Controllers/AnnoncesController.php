@@ -18,10 +18,11 @@ class AnnoncesController
             isset($_POST['lieuArrivee']) &&
             isset($_POST['dateDepart'])&&
             isset($_POST['place'])&&
-            isset($_POST['prix'])) {
+            isset($_POST['prix'])&&
+            isset($_POST['user'])) {
             // Create the Annonce :
             $annoncesService = new AnnoncesService();
-            $isOk = $annoncesService->setAnnonce(
+            $annonceId = $annoncesService->setAnnonce(
                 null,
                 $_POST['lieuDepart'],
                 $_POST['lieuArrivee'],
@@ -29,7 +30,13 @@ class AnnoncesController
                 $_POST['place'],
                 $_POST['prix']
             );
-            if ($isOk) {
+            // Create the annonces users relations :
+            $isOk = true;
+            if (!empty($_POST['user'])) {
+                $userId = $_POST['user'];
+                $isOk = $annoncesService->setAnnonceUser($annonceId, $userId);
+            }
+            if ($annonceId && $isOk) {
                 $html = 'Annonce créé avec succès.';
             } else {
                 $html = 'Erreur lors de la création de l\'annonce.';
@@ -52,8 +59,15 @@ class AnnoncesController
 
         // Get html :
         foreach ($annonces as $annonce) {
+            $usersHtml = '';
+            if (!empty($annonce->getUser())) {
+                foreach ($annonce->getUser() as $users) {
+                    $usersHtml .= $users->getFirstname() . ' ' . $users->getLastname() . ' ';
+                }
+            }
             $html .=
                 '#' . $annonce->getId() . ' | ' .
+                $usersHtml . ' | ' .
                 $annonce->getLieuDepart() . ' ==> ' .
                 $annonce->getLieuArrivee() . ' | '.
                 $annonce->getDateDepart()->format('H:i d-m-Y') . ' | '.
@@ -77,7 +91,8 @@ class AnnoncesController
             isset($_POST['lieuArrivee']) &&
             isset($_POST['dateDepart']) &&
             isset($_POST['place'])&&
-            isset($_POST['prix'])) {
+            isset($_POST['prix'])&&
+            isset($_POST['user'])) {
             // Update the Annonce :
             $annoncesService = new AnnoncesService();
             $isOk = $annoncesService->setAnnonce(
@@ -88,6 +103,13 @@ class AnnoncesController
                 $_POST['place'],
                 $_POST['prix']
             );
+            // update the annonces users relations :
+            $isOk = true;
+            $annonceId = $_POST['id'];
+            if (!empty($_POST['user'])) {
+                $userId = $_POST['user'];
+                $isOk = $annoncesService->setAnnonceUser($annonceId, $userId);
+            }
             if ($isOk) {
                 $html = 'Annonce mis à jour avec succès.';
             } else {

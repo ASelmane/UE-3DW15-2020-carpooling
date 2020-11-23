@@ -12,15 +12,18 @@ class Annonce
     private $dateDepart;
     private $place;
     private $prix;
+    private $user;
 
     public function getId(): string
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(string $id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     public function getLieuDepart(): string
@@ -28,9 +31,11 @@ class Annonce
         return $this->lieuDepart;
     }
 
-    public function setLieuDepart(string $lieuDepart): void
+    public function setLieuDepart(string $lieuDepart)
     {
         $this->lieuDepart = $lieuDepart;
+
+        return $this;
     }
 
     public function getLieuArrivee(): string
@@ -38,9 +43,11 @@ class Annonce
         return $this->lieuArrivee;
     }
 
-    public function setLieuArrivee(string $lieuArrivee): void
+    public function setLieuArrivee(string $lieuArrivee)
     {
         $this->lieuArrivee = $lieuArrivee;
+
+        return $this;
     }
 
     public function getDateDepart(): DateTime
@@ -48,9 +55,11 @@ class Annonce
         return $this->dateDepart;
     }
 
-    public function setDateDepart(DateTime $dateDepart): void
+    public function setDateDepart(DateTime $dateDepart)
     {
         $this->dateDepart = $dateDepart;
+
+        return $this;
     }
 
     public function getPlace(): string
@@ -58,9 +67,11 @@ class Annonce
         return $this->place;
     }
 
-    public function setPlace(string $place): void
+    public function setPlace(string $place)
     {
         $this->place = $place;
+
+        return $this;
     }
 
     public function getPrix(): string
@@ -68,8 +79,22 @@ class Annonce
         return $this->prix;
     }
 
-    public function setPrix(string $prix): void
+    public function setPrix(string $prix)
     {
         $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getUser(): ?array
+    {
+        return $this->user;
+    }
+
+    public function setUser(array $user)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

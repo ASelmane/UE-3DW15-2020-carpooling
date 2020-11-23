@@ -65,13 +65,20 @@ class UsersController
                     $carsHtml .= $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur() . ' ';
                 }
             }
+            $annoncesHtml = '';
+            if (!empty($user->getAnnonces())) {
+                foreach ($user->getAnnonces() as $annonce) {
+                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' |  ' ;
+                }
+            }
             $html .=
                 '#' . $user->getId() . ' | ' .
                 $user->getFirstname() . ' ' .
                 $user->getLastname() . ' | ' .
                 $user->getEmail() . ' | ' .
                 $user->getBirthday()->format('d-m-Y') . ' | ' .
-                $carsHtml . '<br />';
+                $carsHtml . ' | '.
+                $annoncesHtml . '<br />';
         }
 
         return $html;

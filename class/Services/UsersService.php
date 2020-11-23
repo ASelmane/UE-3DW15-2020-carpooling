@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entities\Car;
 use App\Entities\User;
+use App\Entities\Annonce;
 use DateTime;
 
 class UsersService
@@ -52,6 +53,10 @@ class UsersService
                 // Get cars of this user :
                 $cars = $this->getUserCars($userDTO['id']);
                 $user->setCars($cars);
+
+                // Get annonces of this user :
+                $annonces = $this->getUsersAnnonces($userDTO['id']);
+                $user->setAnnonces($annonces);
 
                 $users[] = $user;
             }
@@ -109,5 +114,33 @@ class UsersService
         }
 
         return $userCars;
+    }
+
+    /**
+     * Get Annonces of given user id.
+     */
+    public function getUsersAnnonces(string $userId): array
+    {
+        $usersAnnonces = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation Annonces and Users :
+        $usersAnnoncesDTO = $dataBaseService->getAnnoncesUsers('', $userId);
+        if (!empty($usersAnnoncesDTO)) {
+            foreach ($usersAnnoncesDTO as $userAnnonceDTO) {
+                $annonce = new Annonce();
+                $annonce->setId($userAnnonceDTO['id']);
+                $annonce->setLieuDepart($userAnnonceDTO['lieuDepart']);
+                $annonce->setLieuArrivee($userAnnonceDTO['lieuArrivee']);
+                $date = new DateTime($userAnnonceDTO['dateDepart']);
+                if ($date !== false) {
+                    $annonce->setDateDepart($date);
+                }
+                $usersAnnonces[] = $annonce;
+            }
+        }
+
+        return $usersAnnonces;
     }
 }
