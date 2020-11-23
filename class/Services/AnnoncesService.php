@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entities\Annonce;
+use App\Entities\User;
 use DateTime;
 
 class AnnoncesService
@@ -10,7 +11,7 @@ class AnnoncesService
     /**
      * Create or update an Annonce.
      */
-    public function setAnnonce(?string $id, string $lieuDepart, string $lieuArrivee, string $dateDepart, string $place, string $prix): bool
+    public function setAnnonce(?string $id, string $lieuDepart, string $lieuArrivee, string $dateDepart, string $place, string $prix): string
     {
         $isOk = false;
 
@@ -46,6 +47,10 @@ class AnnoncesService
                 if ($date !== false) {
                     $annonce->setDateDepart($date);
                 }
+                // Get Users of this Annonce :
+                $user = $this->getAnnoncesUser($annonceDTO['id'],'');
+                $annonce->setUser($user);
+
                 $annonces[] = $annonce;
             }
         }
@@ -64,5 +69,42 @@ class AnnoncesService
         $isOk = $dataBaseService->deleteAnnonce($id);
 
         return $isOk;
+    }
+
+        /**
+     * Create relation bewteen an Annonce and his User.
+     */
+    public function setAnnonceUser(string $annonceId, string $userId): bool
+    {
+        $isOk = false;
+
+        $dataBaseService = new DataBaseService();
+        $isOk = $dataBaseService->setAnnonceUser($annonceId, $userId);
+
+        return $isOk;
+    }
+
+    /**
+     * Get User of given Annonce id.
+     */
+    public function getAnnoncesUser(string $annonceId): array
+    {
+        $annoncesUser = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation Annonces and Users :
+        $annoncesUsersDTO = $dataBaseService->getAnnoncesUsers($annonceId,'');
+        if (!empty($annoncesUsersDTO)) {
+            foreach ($annoncesUsersDTO as $annonceUserDTO) {
+                $user = new User();
+                $user->setId($annonceUserDTO['id']);
+                $user->setFirstname($annonceUserDTO['firstname']);
+                $user->setLastname($annonceUserDTO['lastname']);
+                $annoncesUser[] = $user;
+            }
+        }
+
+        return $annoncesUser;
     }
 }

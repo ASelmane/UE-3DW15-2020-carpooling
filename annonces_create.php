@@ -10,10 +10,13 @@ echo $controller->createAnnonce();
 
 <p>Création d'une annonce</p>
 <form method="post" action="annonces_create.php" name ="annonceCreateForm">
+    <label for="user">ID Utilisateur :</label>
+    <input type="text" name="user">
+    <br />
     <label for="lieuDepart">Lieu de depart :</label>
     <input type="text" name="lieuDepart">
     <label for="dateDepart">Date du depart (Y-m-d H:m) :</label>
-    <input type="text" name="dateDepart">
+    <input type="datetime-local" name="dateDepart">
     <br />
     <label for="lieuArrivee">Lieu d'arrivee :</label>
     <input type="text" name="lieuArrivee">
