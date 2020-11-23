@@ -14,9 +14,11 @@ class Car
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(string $id): self
     {
         $this->id = $id;
+
+        return $this;
     }
 
     public function getMarque(): string
@@ -24,9 +26,11 @@ class Car
         return $this->marque;
     }
 
-    public function setMarque(string $marque): void
+    public function setMarque(string $marque): self
     {
         $this->marque = $marque;
+
+        return $this;
     }
 
     public function getModele(): string
@@ -34,9 +38,11 @@ class Car
         return $this->modele;
     }
 
-    public function setModele(string $modele): void
+    public function setModele(string $modele): self
     {
         $this->modele = $modele;
+
+        return $this;
     }
 
     public function getCouleur(): string
@@ -44,8 +50,10 @@ class Car
         return $this->couleur;
     }
 
-    public function setCouleur(string $couleur): void
+    public function setCouleur(string $couleur): self
     {
         $this->couleur = $couleur;
+
+        return $this;
     }
 }
