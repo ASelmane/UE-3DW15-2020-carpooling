@@ -56,7 +56,20 @@ class AnnoncesController
      */
     public function getAnnonces(): string
     {
-        $html = '';
+        $html = '
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Voiture</th>
+                    <th>Trajet</th>
+                    <th>Places disponibles</th>
+                    <th>Prix</th>
+                    <th>Réservations</th>
+                </tr>
+            </thead>
+            <tbody>';
 
         // Get all Annonces :
         $annoncesService = new AnnoncesService();
@@ -79,20 +92,22 @@ class AnnoncesController
             $reservationsHtml = '';
             if (!empty($annonce->getReservation())) {
                 foreach ($annonce->getReservation() as $reservation) {
-                    $reservationsHtml .='  n°Reservation: ' . $reservation->getId() . ' - n°User: ' . $reservation->getIdUser() . ' - date Réservation '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' |  ' ;
+                    $reservationsHtml .=' #' . $reservation->getId() . ' | User: ' . $reservation->getIdUser() . ' | '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' <br /> ' ;
                 }
             }
             $html .=
-                '#' . $annonce->getId() . ' | ' .
-                $usersHtml . ' | ' .
-                $carsHtml . ' | ' .
-                $annonce->getLieuDepart() . ' ==> ' .
-                $annonce->getLieuArrivee() . ' | '.
-                $annonce->getDateDepart()->format('H:i d-m-Y') . ' | '.
-                $annonce->getPlace() . ' places disponibles | '.
-                $annonce->getPrix() . '€ | '.
-                $reservationsHtml .'<br />';
+                '<tr>
+                    <td> #'.$annonce->getId() . ' </td>' .
+                    '<td> '.$usersHtml . ' </td>' .
+                    '<td> '.$carsHtml . ' </td>' .
+                    '<td> '.$annonce->getLieuDepart() .' ('.$annonce->getDateDepart()->format('H:i d-m-Y') . ') ==> ' .$annonce->getLieuArrivee() . ' </td>' .
+                    '<td> '.$annonce->getPlace() . ' </td>' .
+                    '<td> '.$annonce->getPrix() . '€ </td>' .
+                    '<td> '.$reservationsHtml . ' </td>
+                </tr>' ;
         }
+        $html .='</tbody>
+        </table>';
 
         return $html;
     }

@@ -1,0 +1,75 @@
+body {
+    background: linear-gradient(#ffffff, #a1a1a1);
+    height: 100vh;
+}
+
+p {
+    text-align: center;
+    font-size: 30px;
+}
+
+table,
+td {
+    border: 1px solid #333;
+    margin: auto;
+}
+
+td,
+th {
+    text-align: center;
+    padding: 10px;
+}
+
+thead,
+tfoot {
+    background-color: #333;
+    color: #fff;
+}
+
+form {
+    width: fit-content;
+    margin: auto;
+}
+
+input {
+    margin-bottom: 5px;
+}
+
+#nav {
+    display: flex;
+    justify-content: center;
+}
+
+#nav > ul {
+    display: flex;
+    list-style: none;
+}
+
+#nav > ul > li {
+    cursor: pointer;
+    border: 1px solid #333;
+    margin: 0 5px;
+}
+
+#nav > ul > li > a >  span {
+    color: #000000;
+    font-size: 20px;
+}
+
+#nav > ul > li > a {
+    text-decoration: none;
+    padding: 0px 20px;
+}
+
+.action {
+    width: fit-content;
+    margin: 20px auto;
+}
+
+.action > a {
+    margin: 20px;
+    padding: 0 10px;
+    text-decoration: none;
+    border: 1px solid #333;
+    color: #000000;
+}

@@ -51,7 +51,20 @@ class UsersController
      */
     public function getUsers(): string
     {
-        $html = '';
+        $html = '
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Date d\'anniversaire</th>
+                    <th>Voitures</th>
+                    <th>Annonces</th>
+                    <th>Réservations</th>
+                </tr>
+            </thead>
+            <tbody>';
 
         // Get all users :
         $usersService = new UsersService();
@@ -62,31 +75,34 @@ class UsersController
             $carsHtml = '';
             if (!empty($user->getCars())) {
                 foreach ($user->getCars() as $car) {
-                    $carsHtml .= $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur() . ' ';
+                    $carsHtml .= $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur() . ' <br /> ';
                 }
             }
             $annoncesHtml = '';
             if (!empty($user->getAnnonces())) {
                 foreach ($user->getAnnonces() as $annonce) {
-                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' |  ' ;
+                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' | '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' <br /> ' ;
                 }
             }
             $reservationsHtml = '';
             if (!empty($user->getReservations())) {
                 foreach ($user->getReservations() as $reservation) {
-                    $reservationsHtml .='  n°Reservation: ' . $reservation->getId() . ' n°Annonce: ' . $reservation->getIdAnnonce() . ' date Réservation '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' |  ' ;
+                    $reservationsHtml .=' #' . $reservation->getId() . ' | Annonce: ' . $reservation->getIdAnnonce() . ' | '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' <br /> ' ;
                 }
             }
-            $html .=
-                '#' . $user->getId() . ' | ' .
-                $user->getFirstname() . ' ' .
-                $user->getLastname() . ' | ' .
-                $user->getEmail() . ' | ' .
-                $user->getBirthday()->format('d-m-Y') . ' | ' .
-                $carsHtml . ' | '.
-                $annoncesHtml .' '.
-                $reservationsHtml. '<br />';
+            $html .='
+                    <tr>
+                        <td> #'. $user->getId() . ' </td>' .
+                        '<td> '. $user->getFirstname() . ' ' . $user->getLastname() . ' </td>' .
+                        '<td> '. $user->getEmail() . ' </td>' .
+                        '<td> '. $user->getBirthday()->format('d-m-Y') . ' </td>' .
+                        '<td> '. $carsHtml . ' </td>' .
+                        '<td> '. $annoncesHtml . ' </td>' .
+                        '<td> '. $reservationsHtml. ' </td>
+                    </tr>';
         }
+        $html .='</tbody>
+        </table>';
 
         return $html;
     }

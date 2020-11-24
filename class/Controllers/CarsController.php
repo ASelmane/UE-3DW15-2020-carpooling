@@ -40,7 +40,17 @@ class CarsController
      */
     public function getCars(): string
     {
-        $html = '';
+        $html = '
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Couleur</th>
+                </tr>
+            </thead>
+            <tbody>';
 
         // Get all Cars :
         $carsService = new CarsService();
@@ -48,12 +58,16 @@ class CarsController
 
         // Get html :
         foreach ($cars as $car) {
-            $html .=
-                '#' . $car->getId() . ' ' .
-                $car->getMarque() . ' ' .
-                $car->getModele() . ' ' .
-                $car->getCouleur() .'<br />' ;
+            $html .='
+                <tr>
+                    <td> #'.$car->getId() . ' </td>' .
+                    '<td> '.$car->getMarque() . ' </td>' .
+                    '<td> '.$car->getModele() . ' </td>' .
+                    '<td> '.$car->getCouleur() . ' </td>
+                </tr>' ;
         }
+        $html .='</tbody>
+        </table>';
 
         return $html;
     }

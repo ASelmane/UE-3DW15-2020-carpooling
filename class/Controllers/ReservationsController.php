@@ -39,7 +39,17 @@ class ReservationsController
      */
     public function getReservations(): string
     {
-        $html = '';
+        $html = '
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Annonce</th>
+                    <th>Date de réservations</th>
+                </tr>
+            </thead>
+            <tbody>';
 
         // Get all Reservations :
         $reservationsService = new ReservationsService();
@@ -57,15 +67,19 @@ class ReservationsController
             $annoncesHtml = '';
             if (!empty($reservation->getAnnonce())) {
                 foreach ($reservation->getAnnonce() as $annonce) {
-                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' |  ' ;
+                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' ';
                 }
             }
             $html .=
-                '#' . $reservation->getId() . ' | ' .
-                $annoncesHtml . ' ' .
-                $usersHtml . ' ' .
-                ' à '. $reservation->getDateReservation()->format('H:i d-m-Y') .'<br />';
+                '<tr>
+                    <td> #'.$reservation->getId() . ' </td>' .
+                    '<td> '.$usersHtml . ' </td>' .
+                    '<td> '.$annoncesHtml . ' </td>' .
+                    '<td> '.$reservation->getDateReservation()->format('H:i d-m-Y') . '</td>
+                </tr>';
         }
+        $html .='</tbody>
+        </table>';
 
         return $html;
     }
@@ -95,7 +109,7 @@ class ReservationsController
                 $html = 'Erreur lors de la mise à jour de la reservation.';
             }
         }
-
+       
         return $html;
     }
 
