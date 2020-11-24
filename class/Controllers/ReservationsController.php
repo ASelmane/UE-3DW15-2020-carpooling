@@ -12,7 +12,7 @@ class ReservationsController
     public function createReservation(): string
     {
         $html = '';
-
+        $dateReservation = date('H:i d-m-Y');
         // If the form have been submitted :
         if (isset($_POST['idUser']) &&
             isset($_POST['idAnnonce'])) {
@@ -21,7 +21,8 @@ class ReservationsController
             $isOk = $reservationsService->setReservation(
                 null,
                 $_POST['idUser'],
-                $_POST['idAnnonce']
+                $_POST['idAnnonce'],
+                $dateReservation
             );
             if ($isOk) {
                 $html = 'Reservation créé avec succès.';
@@ -46,10 +47,24 @@ class ReservationsController
 
         // Get html :
         foreach ($reservations as $reservation) {
+            $usersHtml = '';
+            if (!empty($reservation->getUser())) {
+                $usersHtml .= 'Réservé par ';
+                foreach ($reservation->getUser() as $user) {
+                    $usersHtml .= $user->getFirstname() . ' ' . $user->getLastname() . ' ';
+                }
+            }
+            $annoncesHtml = '';
+            if (!empty($reservation->getAnnonce())) {
+                foreach ($reservation->getAnnonce() as $annonce) {
+                    $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' |  ' ;
+                }
+            }
             $html .=
                 '#' . $reservation->getId() . ' | ' .
-                'Utilisateur n°' . $reservation->getIdUser() . ' | ' .
-                'Annonce n°' . $reservation->getIdAnnonce() . '<br />';
+                $annoncesHtml . ' ' .
+                $usersHtml . ' ' .
+                ' à '. $reservation->getDateReservation()->format('H:i d-m-Y') .'<br />';
         }
 
         return $html;
@@ -61,7 +76,7 @@ class ReservationsController
     public function updateReservation(): string
     {
         $html = '';
-
+        $dateReservation = date('H:i d-m-Y');
         // If the form have been submitted :
         if (isset($_POST['id']) &&
             isset($_POST['idUser']) &&
@@ -71,7 +86,8 @@ class ReservationsController
             $isOk = $reservationsService->setReservation(
                 $_POST['id'],
                 $_POST['idUser'],
-                $_POST['idAnnonce']
+                $_POST['idAnnonce'],
+                $dateReservation
             );
             if ($isOk) {
                 $html = 'Reservation mis à jour avec succès.';

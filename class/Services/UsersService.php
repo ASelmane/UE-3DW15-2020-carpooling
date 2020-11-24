@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entities\Car;
 use App\Entities\User;
 use App\Entities\Annonce;
+use App\Entities\Reservation;
 use DateTime;
 
 class UsersService
@@ -57,6 +58,10 @@ class UsersService
                 // Get annonces of this user :
                 $annonces = $this->getUsersAnnonces($userDTO['id']);
                 $user->setAnnonces($annonces);
+
+                // Get reservations of this user :
+                $reservations = $this->getUserReservations($userDTO['id']);
+                $user->setReservations($reservations);
 
                 $users[] = $user;
             }
@@ -142,5 +147,32 @@ class UsersService
         }
 
         return $usersAnnonces;
+    }
+
+    /**
+     * Get reservation of given user id.
+     */
+    public function getUserReservations(string $userId): array
+    {
+        $UserReservations = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation Annonces and Users :
+        $UserReservationsDTO = $dataBaseService->getReservationUsers('', $userId);
+        if (!empty($UserReservationsDTO)) {
+            foreach ($UserReservationsDTO as $UserReservationDTO) {
+                $reservation = new Reservation();
+                $reservation->setId($UserReservationDTO['id']);
+                $reservation->setIdAnnonce($UserReservationDTO['annonce_id']);
+                $date = new DateTime($UserReservationDTO['dateReservation']);
+                if ($date !== false) {
+                    $reservation->setDateReservation($date);
+                }
+                $UserReservations[] = $reservation;
+            }
+        }
+
+        return $UserReservations;
     }
 }

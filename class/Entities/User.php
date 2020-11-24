@@ -13,6 +13,7 @@ class User
     private $birthday;
     private $cars;
     private $annonces;
+    private $reservations;
 
     public function getId(): string
     {
@@ -94,6 +95,18 @@ class User
     public function setAnnonces(array $annonces)
     {
         $this->annonces = $annonces;
+
+        return $this;
+    }
+
+    public function getReservations(): ?array
+    {
+        return $this->reservations;
+    }
+
+    public function setReservations(array $reservations)
+    {
+        $this->reservations = $reservations;
 
         return $this;
     }

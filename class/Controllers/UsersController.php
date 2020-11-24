@@ -71,6 +71,12 @@ class UsersController
                     $annoncesHtml .= $annonce->getLieuDepart() . ' ==> ' . $annonce->getLieuArrivee() . ' '. $annonce->getDateDepart()->format('H:i d-m-Y'). ' |  ' ;
                 }
             }
+            $reservationsHtml = '';
+            if (!empty($user->getReservations())) {
+                foreach ($user->getReservations() as $reservation) {
+                    $reservationsHtml .='  n°Reservation: ' . $reservation->getId() . ' n°Annonce: ' . $reservation->getIdAnnonce() . ' date Réservation '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' |  ' ;
+                }
+            }
             $html .=
                 '#' . $user->getId() . ' | ' .
                 $user->getFirstname() . ' ' .
@@ -78,7 +84,8 @@ class UsersController
                 $user->getEmail() . ' | ' .
                 $user->getBirthday()->format('d-m-Y') . ' | ' .
                 $carsHtml . ' | '.
-                $annoncesHtml . '<br />';
+                $annoncesHtml .' '.
+                $reservationsHtml. '<br />';
         }
 
         return $html;

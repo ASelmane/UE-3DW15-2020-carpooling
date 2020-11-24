@@ -12,7 +12,9 @@ class Annonce
     private $dateDepart;
     private $place;
     private $prix;
+
     private $user;
+    private $reservation;
 
     public function getId(): string
     {
@@ -94,6 +96,18 @@ class Annonce
     public function setUser(array $user)
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getReservation(): ?array
+    {
+        return $this->reservation;
+    }
+
+    public function setReservation(array $reservation)
+    {
+        $this->reservation = $reservation;
 
         return $this;
     }
