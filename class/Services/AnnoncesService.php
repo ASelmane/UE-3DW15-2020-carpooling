@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entities\Annonce;
 use App\Entities\User;
 use App\Entities\Reservation;
+use App\Entities\Car;
 use DateTime;
 
 class AnnoncesService
@@ -51,6 +52,10 @@ class AnnoncesService
                 // Get Users of this Annonce :
                 $user = $this->getAnnoncesUser($annonceDTO['id']);
                 $annonce->setUser($user);
+
+                // Get car of this annonce :
+                $cars = $this->getAnnonceCars($annonceDTO['id']);
+                $annonce->setCars($cars);
 
                 // Get reservations of this Annonce :
                 $reservation = $this->getAnnonceReservations($annonceDTO['id']);
@@ -111,6 +116,44 @@ class AnnoncesService
         }
 
         return $annoncesUser;
+    }
+
+       /**
+     * Create relation bewteen an annonce and his car.
+     */
+    public function setAnnonceCar(string $annonceId, string $carId): bool
+    {
+        $isOk = false;
+
+        $dataBaseService = new DataBaseService();
+        $isOk = $dataBaseService->setAnnonceCar($annonceId, $carId);
+
+        return $isOk;
+    }
+
+    /**
+     * Get cars of given annonce id.
+     */
+    public function getAnnonceCars(string $annonceId): array
+    {
+        $annonceCar = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation users and cars :
+        $annoncesCarsDTO = $dataBaseService->getAnnonceCars($annonceId);
+        if (!empty($annoncesCarsDTO)) {
+            foreach ($annoncesCarsDTO as $annonceCarDTO) {
+                $car = new Car();
+                $car->setId($annonceCarDTO['id']);
+                $car->setMarque($annonceCarDTO['marque']);
+                $car->setModele($annonceCarDTO['modele']);
+                $car->setCouleur($annonceCarDTO['couleur']);
+                $annonceCar[] = $car;
+            }
+        }
+
+        return $annonceCar;
     }
 
     /**

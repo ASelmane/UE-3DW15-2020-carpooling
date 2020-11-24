@@ -107,7 +107,7 @@ class UsersController
             isset($_POST['cars'])) {
             // Update the user :
             $usersService = new UsersService();
-            $isOk = $usersService->setUser(
+            $result = $usersService->setUser(
                 $_POST['id'],
                 $_POST['firstname'],
                 $_POST['lastname'],
@@ -122,7 +122,7 @@ class UsersController
                     $isOk = $usersService->setUserCar($userId, $carId);
                 }
             }
-            if ($isOk) {
+            if ($result || $isOk) {
                 $html = 'Utilisateur mis à jour avec succès.';
             } else {
                 $html = 'Erreur lors de la mise à jour de l\'utilisateur.';

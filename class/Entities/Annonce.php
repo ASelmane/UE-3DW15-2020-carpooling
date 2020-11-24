@@ -15,6 +15,7 @@ class Annonce
 
     private $user;
     private $reservation;
+    private $cars;
 
     public function getId(): string
     {
@@ -108,6 +109,18 @@ class Annonce
     public function setReservation(array $reservation)
     {
         $this->reservation = $reservation;
+
+        return $this;
+    }
+    
+    public function getCars(): ?array
+    {
+        return $this->cars;
+    }
+
+    public function setCars(array $cars)
+    {
+        $this->cars = $cars;
 
         return $this;
     }
