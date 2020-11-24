@@ -101,10 +101,11 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE users, users_cars, users_annonces
+        $sql = 'DELETE users, users_cars, users_annonces, reservations
                 FROM users
                 LEFT JOIN users_cars ON users_cars.user_id = users.id
                 LEFT JOIN users_annonces ON users_annonces.user_id = users.id
+                LEFT JOIN reservations ON reservations.user_id = users.id
                 WHERE users.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
@@ -189,9 +190,9 @@ class DataBaseService
         return $isOk;
     }
 
-     /**
-     * Create relation bewteen an user and his car.
-     */
+    /**
+    * Create relation bewteen an user and his car.
+    */
     public function setUserCar(string $userId, string $carId): bool
     {
         $isOk = false;
@@ -304,9 +305,10 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE annonces, users_annonces 
+        $sql = 'DELETE annonces, users_annonces, reservations
                 FROM annonces
                 LEFT JOIN users_annonces ON users_annonces.annonce_id = annonces.id
+                LEFT JOIN reservations ON reservations.annonce_id = annonces.id
                 WHERE annonces.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
@@ -314,9 +316,9 @@ class DataBaseService
         return $isOk;
     }
 
-     /**
-     * Create relation bewteen an user and his annonces.
-     */
+    /**
+    * Create relation bewteen an user and his annonces.
+    */
     public function setAnnonceUser(string $annonceId, string $userId): bool
     {
         $isOk = false;
@@ -338,7 +340,7 @@ class DataBaseService
     public function getAnnoncesUsers(?string $annonceId, ?string $userId): array
     {
         $userAnnonces = [];
-        if(!empty($userId)){
+        if (!empty($userId)) {
             $data = [
                 'userId' => $userId,
             ];
@@ -347,8 +349,7 @@ class DataBaseService
                 FROM annonces as a
                 LEFT JOIN users_annonces as ua ON ua.annonce_id = a.id
                 WHERE ua.user_id = :userId';
-        }
-        else{
+        } else {
             $data = [
                 'annonceId' => $annonceId,
             ];
@@ -357,7 +358,7 @@ class DataBaseService
                 FROM users as u
                 LEFT JOIN users_annonces as ua ON ua.user_id = u.id
                 WHERE ua.annonce_id = :annonceId';
-        } 
+        }
         
         $query = $this->connection->prepare($sql);
         $query->execute($data);
@@ -369,22 +370,26 @@ class DataBaseService
         return $userAnnonces;
     }
 
-        /**
+    /**
      * Create a reservation.
      */
-    public function createReservation(string $idUser, string $idAnnonce): bool
+    public function createReservation(string $user_id, string $annonce_id, DateTime $dateReservation): string
     {
-        $isOk = false;
+        $reservationId = false;
 
         $data = [
-            'idUser' => $idUser,
-            'idAnnonce' => $idAnnonce,
+            'user_id' => $user_id,
+            'annonce_id' => $annonce_id,
+            'dateReservation' => $dateReservation->format('Y-m-d H:i'),
         ];
-        $sql = 'INSERT INTO reservations (idUser, idAnnonce) VALUES (:idUser, :idAnnonce)';
+        $sql = 'INSERT INTO reservations (user_id, annonce_id, dateReservation) VALUES (:user_id, :annonce_id, :dateReservation)';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
+        if ($isOk) {
+            $reservationId = $this->connection->lastInsertId();
+        }
 
-        return $isOk;
+        return $reservationId;
     }
 
     /**
@@ -407,16 +412,17 @@ class DataBaseService
     /**
      * Update a reservation.
      */
-    public function updateReservation(string $id, string $idUser, string $idAnnonce): bool
+    public function updateReservation(string $id, string $user_id, string $annonce_id, DateTime $dateReservation): bool
     {
         $isOk = false;
 
         $data = [
             'id' => $id,
-            'idUser' => $idUser,
-            'idAnnonce' => $idAnnonce,
+            'user_id' => $user_id,
+            'annonce_id' => $annonce_id,
+            'dateReservation' => $dateReservation->format('Y-m-d H:i'),
         ];
-        $sql = 'UPDATE reservations SET idUser = :idUser, idAnnonce = :idAnnonce WHERE id = :id;';
+        $sql = 'UPDATE reservations SET user_id = :user_id, annonce_id = :annonce_id, dateReservation = :dateReservation WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -438,5 +444,67 @@ class DataBaseService
         $isOk = $query->execute($data);
 
         return $isOk;
+    }
+
+    public function getReservationUsers(?string $reservationId, ?string $userId): array
+    {
+        $reservationUsers = [];
+        if (!empty($userId)) {
+            $data = [
+                'userId' => $userId,
+            ];
+            $sql = '
+                SELECT r.*
+                FROM reservations as r
+                WHERE r.user_id = :userId';
+        } else {
+            $data = [
+                'reservationId' => $reservationId,
+            ];
+            $sql = '
+                SELECT u.*
+                FROM users as u
+                LEFT JOIN reservations as r ON r.user_id = u.id
+                WHERE r.id = :reservationId';
+        }
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $reservationUsers = $results;
+        }
+
+        return $reservationUsers;
+    }
+
+    public function getReservationsAnnonces(?string $reservationId, ?string $annonceId): array
+    {
+        $reservationsAnnonces = [];
+        if (!empty($annonceId)) {
+            $data = [
+                'annonceId' => $annonceId,
+            ];
+            $sql = '
+                SELECT r.*
+                FROM reservations as r
+                WHERE r.annonce_id = :annonceId';
+        } else {
+            $data = [
+                'reservationId' => $reservationId,
+            ];
+            $sql = '
+                SELECT a.*
+                FROM annonces as a
+                LEFT JOIN reservations as r ON r.annonce_id = a.id
+                WHERE r.id = :reservationId';
+        }
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $reservationsAnnonces = $results;
+        }
+
+        return $reservationsAnnonces;
     }
 }

@@ -65,6 +65,12 @@ class AnnoncesController
                     $usersHtml .= $users->getFirstname() . ' ' . $users->getLastname() . ' ';
                 }
             }
+            $reservationsHtml = '';
+            if (!empty($annonce->getReservation())) {
+                foreach ($annonce->getReservation() as $reservation) {
+                    $reservationsHtml .='  n°Reservation: ' . $reservation->getId() . ' - n°User: ' . $reservation->getIdUser() . ' - date Réservation '. $reservation->getDateReservation()->format('H:i d-m-Y'). ' |  ' ;
+                }
+            }
             $html .=
                 '#' . $annonce->getId() . ' | ' .
                 $usersHtml . ' | ' .
@@ -72,7 +78,8 @@ class AnnoncesController
                 $annonce->getLieuArrivee() . ' | '.
                 $annonce->getDateDepart()->format('H:i d-m-Y') . ' | '.
                 $annonce->getPlace() . ' places disponible | '.
-                $annonce->getPrix() . '€ <br />';
+                $annonce->getPrix() . '€ | '.
+                $reservationsHtml.'<br />';
         }
 
         return $html;
@@ -95,7 +102,7 @@ class AnnoncesController
             isset($_POST['user'])) {
             // Update the Annonce :
             $annoncesService = new AnnoncesService();
-            $isOk = $annoncesService->setAnnonce(
+            $result = $annoncesService->setAnnonce(
                 $_POST['id'],
                 $_POST['lieuDepart'],
                 $_POST['lieuArrivee'],
@@ -110,7 +117,7 @@ class AnnoncesController
                 $userId = $_POST['user'];
                 $isOk = $annoncesService->setAnnonceUser($annonceId, $userId);
             }
-            if ($isOk) {
+            if ($result || $isOk) {
                 $html = 'Annonce mis à jour avec succès.';
             } else {
                 $html = 'Erreur lors de la mise à jour de l\'annonce.';

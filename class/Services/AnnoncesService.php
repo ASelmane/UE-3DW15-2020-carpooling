@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entities\Annonce;
 use App\Entities\User;
+use App\Entities\Reservation;
 use DateTime;
 
 class AnnoncesService
@@ -48,8 +49,12 @@ class AnnoncesService
                     $annonce->setDateDepart($date);
                 }
                 // Get Users of this Annonce :
-                $user = $this->getAnnoncesUser($annonceDTO['id'],'');
+                $user = $this->getAnnoncesUser($annonceDTO['id']);
                 $annonce->setUser($user);
+
+                // Get reservations of this Annonce :
+                $reservation = $this->getAnnonceReservations($annonceDTO['id']);
+                $annonce->setReservation($reservation);
 
                 $annonces[] = $annonce;
             }
@@ -71,7 +76,7 @@ class AnnoncesService
         return $isOk;
     }
 
-        /**
+    /**
      * Create relation bewteen an Annonce and his User.
      */
     public function setAnnonceUser(string $annonceId, string $userId): bool
@@ -94,7 +99,7 @@ class AnnoncesService
         $dataBaseService = new DataBaseService();
 
         // Get relation Annonces and Users :
-        $annoncesUsersDTO = $dataBaseService->getAnnoncesUsers($annonceId,'');
+        $annoncesUsersDTO = $dataBaseService->getAnnoncesUsers($annonceId, '');
         if (!empty($annoncesUsersDTO)) {
             foreach ($annoncesUsersDTO as $annonceUserDTO) {
                 $user = new User();
@@ -106,5 +111,32 @@ class AnnoncesService
         }
 
         return $annoncesUser;
+    }
+
+    /**
+     * Get reservation of given user id.
+     */
+    public function getAnnonceReservations(string $annonceId): array
+    {
+        $AnnonceReservations = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation Annonces and Users :
+        $AnnonceReservationsDTO = $dataBaseService->getReservationsAnnonces('', $annonceId);
+        if (!empty($AnnonceReservationsDTO)) {
+            foreach ($AnnonceReservationsDTO as $AnnonceReservationDTO) {
+                $reservation = new Reservation();
+                $reservation->setId($AnnonceReservationDTO['id']);
+                $reservation->setIdUser($AnnonceReservationDTO['user_id']);
+                $date = new DateTime($AnnonceReservationDTO['dateReservation']);
+                if ($date !== false) {
+                    $reservation->setDateReservation($date);
+                }
+                $AnnonceReservations[] = $reservation;
+            }
+        }
+
+        return $AnnonceReservations;
     }
 }
