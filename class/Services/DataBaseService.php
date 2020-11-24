@@ -180,9 +180,10 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE cars, users_cars 
+        $sql = 'DELETE cars, users_cars,annonces_cars
         FROM cars
         LEFT JOIN users_cars ON users_cars.car_id = cars.id
+        LEFT JOIN annonces_cars ON annonces_cars.car_id = cars.id
         WHERE cars.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
@@ -305,10 +306,11 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE annonces, users_annonces, reservations
+        $sql = 'DELETE annonces, users_annonces, reservations, annonces_cars
                 FROM annonces
                 LEFT JOIN users_annonces ON users_annonces.annonce_id = annonces.id
                 LEFT JOIN reservations ON reservations.annonce_id = annonces.id
+                LEFT JOIN annonces_cars ON annonces_cars.annonce_id = annonces.id
                 WHERE annonces.id = :id ';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
@@ -368,6 +370,49 @@ class DataBaseService
         }
 
         return $userAnnonces;
+    }
+
+    /**
+    * Create relation bewteen an annonce and his car.
+    */
+    public function setAnnonceCar(string $annonceId, string $carId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'annonceId' => $annonceId,
+            'carId' => $carId,
+        ];
+        $sql = 'INSERT INTO annonces_cars (annonce_id, car_id) VALUES (:annonceId, :carId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get cars of given annonce id.
+     */
+    public function getAnnonceCars(string $annonceId): array
+    {
+        $annonceCars = [];
+
+        $data = [
+            'annonceId' => $annonceId,
+        ];
+        $sql = '
+            SELECT c.*
+            FROM cars as c
+            LEFT JOIN annonces_cars as ac ON ac.car_id = c.id
+            WHERE ac.annonce_id = :annonceId';
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $annonceCars = $results;
+        }
+
+        return $annonceCars;
     }
 
     /**

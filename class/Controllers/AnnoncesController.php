@@ -19,7 +19,8 @@ class AnnoncesController
             isset($_POST['dateDepart'])&&
             isset($_POST['place'])&&
             isset($_POST['prix'])&&
-            isset($_POST['user'])) {
+            isset($_POST['user'])&&
+            isset($_POST['car'])) {
             // Create the Annonce :
             $annoncesService = new AnnoncesService();
             $annonceId = $annoncesService->setAnnonce(
@@ -35,6 +36,10 @@ class AnnoncesController
             if (!empty($_POST['user'])) {
                 $userId = $_POST['user'];
                 $isOk = $annoncesService->setAnnonceUser($annonceId, $userId);
+            }
+            if (!empty($_POST['car'])) {
+                $carId = $_POST['car'] ;
+                $isOk = $annoncesService->setAnnonceCar($annonceId, $carId);
             }
             if ($annonceId && $isOk) {
                 $html = 'Annonce créé avec succès.';
@@ -65,6 +70,12 @@ class AnnoncesController
                     $usersHtml .= $users->getFirstname() . ' ' . $users->getLastname() . ' ';
                 }
             }
+            $carsHtml = '';
+            if (!empty($annonce->getCars())) {
+                foreach ($annonce->getCars() as $car) {
+                    $carsHtml .= $car->getMarque() . ' ' . $car->getModele() . ' ' . $car->getCouleur() . ' ';
+                }
+            }
             $reservationsHtml = '';
             if (!empty($annonce->getReservation())) {
                 foreach ($annonce->getReservation() as $reservation) {
@@ -74,12 +85,13 @@ class AnnoncesController
             $html .=
                 '#' . $annonce->getId() . ' | ' .
                 $usersHtml . ' | ' .
+                $carsHtml . ' | ' .
                 $annonce->getLieuDepart() . ' ==> ' .
                 $annonce->getLieuArrivee() . ' | '.
                 $annonce->getDateDepart()->format('H:i d-m-Y') . ' | '.
-                $annonce->getPlace() . ' places disponible | '.
+                $annonce->getPlace() . ' places disponibles | '.
                 $annonce->getPrix() . '€ | '.
-                $reservationsHtml.'<br />';
+                $reservationsHtml .'<br />';
         }
 
         return $html;
@@ -99,7 +111,8 @@ class AnnoncesController
             isset($_POST['dateDepart']) &&
             isset($_POST['place'])&&
             isset($_POST['prix'])&&
-            isset($_POST['user'])) {
+            isset($_POST['user'])&&
+            isset($_POST['car'])) {
             // Update the Annonce :
             $annoncesService = new AnnoncesService();
             $result = $annoncesService->setAnnonce(
@@ -116,6 +129,10 @@ class AnnoncesController
             if (!empty($_POST['user'])) {
                 $userId = $_POST['user'];
                 $isOk = $annoncesService->setAnnonceUser($annonceId, $userId);
+            }
+            if (!empty($_POST['car'])) {
+                $carId = $_POST['car'] ;
+                $isOk = $annoncesService->setAnnonceCar($annonceId, $carId);
             }
             if ($result || $isOk) {
                 $html = 'Annonce mis à jour avec succès.';
